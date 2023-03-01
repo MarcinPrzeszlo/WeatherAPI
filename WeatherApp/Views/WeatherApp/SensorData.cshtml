@@ -1,0 +1,248 @@
+﻿@model WeatherApp.Models.SensorModel
+
+@{
+    int results = Model.Results;
+    string[] createdArd = new string[results];
+    string[] createdRaspb = new string[results];
+    string[] pm1 = new string[results];
+    string[] pm25 = new string[results];
+    string[] pm10 = new string[results];
+    string[] CO = new string[results];
+    string[] benzene = new string[results];
+    string[] temperature = new string[results];
+    string[] humidity = new string[results];
+    string[] pressure = new string[results];
+
+
+    for (int i = 0; i < results; i++)
+    {
+        float temp;
+        DateTime dt;
+
+        dt = DateTime.ParseExact(Model.Ard_Created_At[i], "yyyy-MM-dd'T'HH:mm:ss'Z'", System.Globalization.CultureInfo.InvariantCulture);
+        createdArd[i] = dt.ToString("dd.MM HH:mm");
+
+        dt = DateTime.ParseExact(Model.Raspb_Created_At[i], "yyyy-MM-dd'T'HH:mm:ss'Z'", System.Globalization.CultureInfo.InvariantCulture);
+        createdRaspb[i] = dt.ToString("dd.MM HH:mm");
+
+        temp = Model.PM1[i];
+        pm1[i] = temp.ToString();
+        pm1[i] = pm1[i].Replace(",", ".");
+
+        temp = Model.PM25[i];
+        pm25[i] = temp.ToString();
+        pm25[i] = pm25[i].Replace(",", ".");
+
+        temp = Model.PM10[i];
+        pm10[i] = temp.ToString();
+        pm10[i] = pm10[i].Replace(",", ".");
+
+        temp = Model.CO[i];
+        CO[i] = temp.ToString();
+        CO[i] = CO[i].Replace(",", ".");
+
+        temp = Model.Benzene[i];
+        benzene[i] = temp.ToString();
+        benzene[i] = benzene[i].Replace(",", ".");
+
+        temp = Model.Temperature[i];
+        temperature[i] = temp.ToString();
+        temperature[i] = temperature[i].Replace(",", ".");
+
+        temp = Model.Humidity[i];
+        humidity[i] = temp.ToString();
+        humidity[i] = humidity[i].Replace(",", ".");
+
+        temp = Model.Pressure[i];
+        pressure[i] = temp.ToString();
+        pressure[i] = pressure[i].Replace(",", ".");
+
+
+    }
+
+
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Search by city</title>
+</head>
+<body>
+    <div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <h6>Location of weather station: @Model.Location</h6>
+                            <h6>Number of measurements: @Model.Results</h6>
+                        </div>
+                        <div class="col">
+                            <form>
+                                <input type="button" value="Go back!" onclick="history.back()" class="btn btn-outline-primary">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <canvas id="temp" width="400" height="200"></canvas>
+                <canvas id="hum" width="400" height="100"></canvas>
+                <canvas id="press" width="400" height="100"></canvas>
+
+            </div>
+            <div class="col">
+                <canvas id="PM" width="400" height="200"></canvas>
+                <canvas id="CObenz" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+
+
+
+    const createdArd = [];
+    const createdRaspb = [];
+    const pm1 = [];
+    const pm25 = [];
+    const pm10 = [];
+    const CO = [];
+    const benzene = [];
+    const temperature = [];
+    const humidity = [];
+    const pressure = [];
+
+    @for (int i = 0; i < results; i++)
+    {
+        @:createdArd.push("@createdArd[i]");
+        @:createdRaspb.push("@createdRaspb[i]");
+        @:pm1.push("@pm1[i]");
+        @:pm25.push("@pm25[i]");
+        @:pm10.push("@pm10[i]");
+        @:CO.push("@CO[i]");
+        @:benzene.push("@benzene[i]");
+        @:temperature.push("@temperature[i]");
+        @:humidity.push("@humidity[i]");
+        @:pressure.push("@pressure[i]")
+    }
+
+        const ctx0 = 'temp';
+    const temp = new Chart(ctx0, {
+        type: 'line',
+        data: {
+            labels: createdRaspb,
+            datasets: [{
+                label: 'Temperature [°C]',
+                data: temperature,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    const ctx1 = "PM";
+    const PM = new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: createdArd,
+            datasets: [{
+                label: 'PM1 [µg/m³]',
+                data: pm1,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2
+            },
+            {
+                label: 'PM2,5 [µg/m³]',
+                data: pm25,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            },
+            {
+                label: 'PM10 [µg/m³]',
+                data: pm10,
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    })
+
+    const ctx2 = "CObenz";
+    const CObenz = new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: createdArd,
+            datasets: [{
+                label: 'CO [µg/m³]',
+                data: CO,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2
+            },
+            {
+                label: 'benzene [µg/m³]',
+                data: benzene,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    })
+
+    const ctx3 = "hum";
+    const hum = new Chart(ctx3, {
+        type: 'line',
+        data: {
+            labels: createdRaspb,
+            datasets: [{
+                label: 'Humidity [%]',
+                data: humidity,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2
+            }]
+        }
+    })
+
+    const ctx4 = "press";
+    const press = new Chart(ctx4, {
+        type: 'line',
+        data: {
+            labels: createdRaspb,
+            datasets: [{
+                label: 'Pressure [hPa]',
+                data: pressure,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2
+            }]
+        }
+    })
+</script>
+

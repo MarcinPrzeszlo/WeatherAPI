@@ -1,0 +1,30 @@
+﻿@model WeatherApp.Models.SearchByCityModel
+@{
+}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Search by city</title>
+</head>
+
+<body>
+    <div class="container">
+
+        <form method="post">
+            <div class="container">
+                <h5>Search By City Name</h5>
+                <div>
+                    <input type="text" required asp-for="CityName" class="form-control mb-3" placeholder="Enter city name" />
+                    <button asp-controller="WeatherApp" asp-action="CitySearching" class="btn btn-outline-primary mb-3">
+                        Search
+                    </button>
+                    <span asp-validation-for="CityName" class="text-danger"></span>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

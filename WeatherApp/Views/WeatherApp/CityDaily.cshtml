@@ -1,0 +1,138 @@
+﻿@model WeatherApp.Models.CityModel
+
+@{
+    Dictionary<int, string> icons = new Dictionary<int, string>()
+    {
+        {200, "wi wi-thunderstorm"},{201, "wi wi-thunderstorm"},{202, "wi wi-thunderstorm"},{210, "wi wi-lightning"},{211, "wi wi-lightning"},{212, "wi wi-lightning"},{221, "wi wi-lightning"},
+        {230, "wi wi-thunderstorm"},{231, "wi wi-thunderstorm"},{232, "wi wi-thunderstorm"},{300, "wi wi-sprinkle"},{301, "wi wi-sprinkle"},{302, "wi wi-rain"},{310, "wi wi-rain-mix"},
+        {311, "wi wi-rain"},{312, "wi wi-rain"},{313, "wi wi-showers"},{314, "wi wi-rain"},{321, "wi wi-sprinkle"},{500, "wi wi-sprinkle"},{501, "wi wi-rain"},{502, "wi wi-rain"},
+        {503, "wi wi-rain"},{504, "wi wi-rain"},{511, "wi wi-rain-mix"},{520, "wi wi-showers"},{521, "wi wi-showers"},{522, "wi wi-showers"},{531, "wi wi-storm-showers"},{600, "wi wi-snow"},
+        {601, "wi wi-snow"},{602, "wi wi-sleet"},{611, "wi wi-rain-mix"},{612, "wi wi-rain-mix"},{615, "wi wi-rain-mix"},{616, "wi wi-rain-mix"},{620, "wi wi-rain-mix"},{621, "wi wi-snow"},
+        {622, "wi wi-snow"},{701, "wi wi-showers"},{711, "wi wi-smoke"},{721, "wi wi-day-haze"},{731, "wi wi-dust"},{741, "wi wi-fog"},{761, "wi wi-dust"},{762, "wi wi-dust"},
+        {771, "wi wi-cloudy-gusts"},{781, "wi wi-tornado"},{800, "wi wi-day-sunny"},{801, "wi wi-cloudy-gusts"},{802, "wi wi-cloudy-gusts"},{803, "wi wi-cloudy-gusts"},{804, "wi wi-cloudy"},
+        {900, "wi wi-tornado"},{901, "wi wi-storm-showers"},{902, "wi wi-hurricane"},{903, "wi wi-snowflake-cold"},{904, "wi wi-hot"},{905, "wi wi-windy"},{906, "wi wi-hail"},{957, "wi wi-strong-wind"}
+    };
+
+
+}
+<!doctype html>
+<head>
+    <link rel="stylesheet" href="https://erikflowers.github.io/weather-icons/css/weather-icons.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <!--Search & current weather-->
+                <div>
+                    <label asp-for="Name">  </label>
+                    <h3> @Model.Name, @Model.Country</h3>
+                    <br />
+                </div>
+
+                <div class="container">
+                    <div class="container">
+                        <div class="form-group col-md-offset-3 col-md-5">
+                            @{
+                                DateTime datetimeNow = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                                datetimeNow = datetimeNow.AddSeconds(@Model.Dt).ToLocalTime();
+                                var dateNow = datetimeNow.ToString("dd/MM/yyyy");
+                            }
+
+                            <span class="badge alert-primary mb-3">@dateNow</span> <br>
+
+                            <i class="wi wi-thermometer"></i>
+                            <label asp-for="Temperature">  </label>
+                            <span class="badge alert-primary mb-1">@Model.Temperature°C</span> <br />
+
+                            <i class="wi wi-humidity"></i>
+                            <label asp-for="Humidity">  </label>
+                            <span class="badge alert-primary mb-1">@Model.Humidity %</span> <br />
+
+                            <i class="wi wi-barometer"></i>
+                            <label asp-for="Pressure">  </label>
+                            <span class="badge alert-primary mb-1">@Model.Pressure hPa</span> <br />
+
+                            <i class="wi wi-strong-wind"></i>
+                            <label asp-for="Wind">  </label>
+                            <span class="badge alert-primary mb-1">@Model.Wind kph</span> <br />
+
+
+                            <i class="@icons[Model.ID]"></i>
+                            <label asp-for="Weather">  </label>
+                            <span class="badge alert-primary mb-3">@Model.Weather</span> <br />
+
+                            <form>
+                                <input type="button" value="Go back!" onclick="history.back()" class="btn btn-outline-primary">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <!--Forecast-->
+                @for (int i = 0; i <= Model.Daily.Count / 3; i++)
+                {
+
+                    DateTime datetime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                    datetime = datetime.AddSeconds(@Model.Daily[i].Dt).ToLocalTime();
+                    var date = datetime.ToString("dd/MM/yyyy");
+
+                    <span class="badge alert-primary mb-3">@date</span> <br />
+
+                    <ul>
+                        <li>Temp. Max @Model.Daily[i].Temp.Max °C</li>
+                        <li>Temp. Min @Model.Daily[i].Temp.Min °C</li>
+                        <li>Pressure @Model.Daily[i].Pressure hPa</li>
+                        <li>Humidity @Model.Daily[i].Humidity %</li>
+                        <li>Weather @Model.Daily[i].Weather[0].Main</li>
+                        <li>Wind @Model.Daily[i].Wind_Speed kph</li>
+                    </ul>
+                }
+
+
+
+            </div>
+            <div class="col">
+                <!--Forecast-->
+                @for (int i = Model.Daily.Count / 3 + 1; i <= (Model.Daily.Count / 3) * 2 + 1; i++)
+                {
+                    DateTime datetime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                    datetime = datetime.AddSeconds(@Model.Daily[i].Dt).ToLocalTime();
+                    var date = datetime.ToString("dd/MM/yyyy");
+
+                    <span class="badge alert-primary mb-3">@date</span> <br />
+
+                    <ul>
+                        <li>Temp. Max @Model.Daily[i].Temp.Max °C</li>
+                        <li>Temp. Min @Model.Daily[i].Temp.Min °C</li>
+                        <li>Pressure @Model.Daily[i].Pressure hPa</li>
+                        <li>Humidity @Model.Daily[i].Humidity %</li>
+                        <li>Weather @Model.Daily[i].Weather[0].Main</li>
+                        <li>Wind @Model.Daily[i].Wind_Speed kph</li>
+                    </ul>
+                }
+            </div>
+            <div class="col">
+                <!--Forecast-->
+                @for (int i = (Model.Daily.Count / 3) * 2 + 2; i < Model.Daily.Count; i++)
+                {
+                    DateTime datetime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                    datetime = datetime.AddSeconds(@Model.Daily[i].Dt).ToLocalTime();
+                    var date = datetime.ToString("dd/MM/yyyy");
+
+                    <span class="badge alert-primary mb-3">@date</span> <br />
+
+                    <ul>
+                        <li>Temp. Max @Model.Daily[i].Temp.Max °C</li>
+                        <li>Temp. Min @Model.Daily[i].Temp.Min °C</li>
+                        <li>Pressure @Model.Daily[i].Pressure hPa</li>
+                        <li>Humidity @Model.Daily[i].Humidity %</li>
+                        <li>Weather @Model.Daily[i].Weather[0].Main</li>
+                        <li>Wind @Model.Daily[i].Wind_Speed kph</li>
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</body>
