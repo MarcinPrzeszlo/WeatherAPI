@@ -5,13 +5,24 @@ using WeatherAPI.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-
+using NLog.Web;
+using WeatherAPI.Middleware;
+using AutoMapper;
+using System.Reflection;
+using FluentValidation;
+using WeatherAPI.Models;
+using WeatherAPI.Models.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Logging.SetMinimumLevel(LogLevel.Trace);
+builder.Host.UseNLog();
 
 var connectionValues = new ConnectionValues();
 builder.Configuration.GetSection("ConnectionValues").Bind(connectionValues);
 builder.Services.AddSingleton(connectionValues);
+
 
 builder.Services.AddAuthentication(option =>
 {
@@ -35,16 +46,24 @@ builder.Services.AddAuthentication(option =>
 
 builder.Services.AddScoped<IOpenWeatherMapServices, OpenWeatherMapServices>();
 builder.Services.AddScoped<IAccountServices, AccountServices>();
-
+builder.Services.AddScoped<ISensorServices, SensorServices>();
+builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddDbContext<WeatherApiDbContext>();
 builder.Services.AddScoped<DbSeeder>();
+builder.Services.AddScoped<ErrorHandlingMiddleware>();
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
+builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+builder.Services.AddScoped<IValidator<QueryModel>, QueryModelValidator>(); 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 
 
@@ -66,6 +85,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

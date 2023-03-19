@@ -36,14 +36,14 @@ namespace WeatherAPI.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //wyjątek
+                throw new HttpRequestException(message: "Response not succesful");
             }
             else
             {
                 json = await response.Content.ReadAsStringAsync();
                 if (json == "[]")
                 {
-                    //wyjatek
+                    throw new NullReferenceException(message: "Incorrect city name");
                 }
             }
 
@@ -64,14 +64,14 @@ namespace WeatherAPI.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //wyjątek
+                throw new HttpRequestException("Response not succesful");
             }
             else
             {
                 json = await response.Content.ReadAsStringAsync();
                 if (json == null)
                 {
-                    //wyjątek
+                    throw new NullReferenceException("Response content is null");
                 }
             }
 

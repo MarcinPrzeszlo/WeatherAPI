@@ -21,6 +21,13 @@ namespace WeatherAPI
                     _dbContext.Roles.AddRange(roles);
                     _dbContext.SaveChanges();
                 }
+
+                //if (!_dbContext.Sensors.Any())
+                //{
+                //    var sensors = GetSensors();
+                //    _dbContext.Sensors.AddRange(sensors);
+                //    _dbContext.SaveChanges();
+                //}
             }
         }
 
@@ -39,6 +46,19 @@ namespace WeatherAPI
             };
 
             return roles;
+        }
+
+        public IEnumerable<Sensor> GetSensors()
+        {
+            var sensors = new List<Sensor>()
+            {
+                new Sensor()
+                {
+
+                }
+            };
+
+            return sensors;
         }
     }
 }

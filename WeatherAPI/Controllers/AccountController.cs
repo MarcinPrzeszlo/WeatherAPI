@@ -1,18 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WeatherAPI.Models;
 using WeatherAPI.Services;
 
 namespace WeatherAPI.Controllers
 {
-    [Route("account")]
-    public class AccountController : Controller
+    
+    [ApiController]
+    [Route("api/account")]
+    public class AccountController : ControllerBase
     {
         private readonly IAccountServices _accountService;
         public AccountController(IAccountServices accountService)
         {
-
             _accountService = accountService;
-
         }
 
         [Route("register")]
@@ -29,6 +30,13 @@ namespace WeatherAPI.Controllers
         {
             var token = _accountService.GenerateJwt(dto);
             return Ok(token);
+        }
+
+        [HttpDelete]
+        public ActionResult DeleteUser([FromQuery] int userId, [FromBody] LoginDto dto)
+        {
+            _accountService.DeleteUser(userId, dto);
+            return NoContent();
         }
     }
 }

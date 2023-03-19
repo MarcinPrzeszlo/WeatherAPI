@@ -1,14 +1,12 @@
-﻿namespace WeatherAPI.Entities
+﻿namespace WeatherAPI.Models
 {
-    public class Sensor
+    public class CreateSensorDto
     {
-        public int Id { get; set; }
         public string Type { get; set; }
         public string SerialNumber { get; set; }
         public string? Adress { get; set; }
         public double? Lat { get; set; }
         public double? Lon { get; set; }
         public int? UserId { get; set; }
-        public virtual User? Owner { get; set; }
     }
 }

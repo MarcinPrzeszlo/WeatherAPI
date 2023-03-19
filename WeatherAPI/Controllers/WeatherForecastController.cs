@@ -7,7 +7,7 @@ namespace WeatherAPI.Controllers
 {
     //[ApiController]
     [Authorize]
-    [Route("weather")]
+    [Route("api/weather")]
     public class WeatherForecastController : ControllerBase
     {
         private readonly IOpenWeatherMapServices _openWeatherMapService;

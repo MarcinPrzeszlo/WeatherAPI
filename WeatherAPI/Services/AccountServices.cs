@@ -14,6 +14,7 @@ namespace WeatherAPI.Services
     {
         void RegisterUser(RegisterUserDto dto);
         string GenerateJwt(LoginDto dto);
+        void DeleteUser(int userId, LoginDto dto);
     }
 
 
@@ -32,10 +33,6 @@ namespace WeatherAPI.Services
 
         public void RegisterUser(RegisterUserDto dto)
         {
-            var user = _dbContext.Users.FirstOrDefault(u => u.Email == dto.Email);
-            if (user != null)
-                throw new BadRequestException("This mail is taken");
-            
             var newUser = new User()
             {
                 Email = dto.Email,
@@ -54,16 +51,8 @@ namespace WeatherAPI.Services
 
         public string GenerateJwt(LoginDto dto)
         {
-            var user = _dbContext.Users
-                .Include(u => u.Role)
-                .FirstOrDefault(u => u.Email == dto.Email);
-            if (user == null)
-                throw new BadRequestException("Invailid email or password"); 
-
-            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
-            if (result == PasswordVerificationResult.Failed)
-                throw new BadRequestException("Invailid email or password");
-
+            var user = VerifyLoginDto(dto);
+            
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -86,6 +75,28 @@ namespace WeatherAPI.Services
 
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
+        }
+
+        public void DeleteUser(int userId, LoginDto dto)
+        {
+            var user = VerifyLoginDto(dto);
+            _dbContext.Users.Remove(user);
+            _dbContext.SaveChanges();
+        }
+
+        private User VerifyLoginDto(LoginDto dto)
+        {
+            var user = _dbContext.Users
+                .Include(u => u.Role)
+                .FirstOrDefault(u => u.Email == dto.Email);
+            if (user == null)
+                throw new BadRequestException(message: "Invailid email or password");
+
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+            if (result == PasswordVerificationResult.Failed)
+                throw new BadRequestException(message: "Invailid email or password");
+
+            return user;
         }
     }
 }

@@ -12,13 +12,6 @@ namespace WeatherAPI.Entities
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Role>()
-                .Property(r => r.Name)
-                .IsRequired();
-
-            modelBuilder.Entity<Sensor>()
-                .Property(r => r.Adress)
-                .IsRequired(false);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
