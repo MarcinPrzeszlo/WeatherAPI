@@ -23,15 +23,13 @@ namespace WeatherAPI.Services
         private readonly WeatherApiDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IUserContextService _userContextService;
-        private readonly ILogger _logger;
         private readonly IAuthorizationService _authorizationService;
-        public SensorServices(WeatherApiDbContext dbContext, IMapper mapper, IUserContextService userContextService, IAuthorizationService authorizationService, ILogger logger)
+        public SensorServices(WeatherApiDbContext dbContext, IMapper mapper, IUserContextService userContextService, IAuthorizationService authorizationService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _userContextService = userContextService;
             _authorizationService = authorizationService;
-            _logger = logger;
 
         }
 
@@ -51,14 +49,7 @@ namespace WeatherAPI.Services
         public void DeleteSensor(int sensorId)
         {
             var sensorEntity = GetSensorById(sensorId);
-            _logger.LogInformation($"Delete operation invoked on sensor {sensorId}");
 
-            //var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, sensorEntity, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
-
-            //if (!authorizationResult.Succeeded)
-            //{
-            //    throw new ForbidException("This operation is forbidden");
-            //}
             _dbContext.Sensors.Remove(sensorEntity);
             _dbContext.SaveChanges();
         }
@@ -66,8 +57,6 @@ namespace WeatherAPI.Services
         public void UpdateSensorDetails(int sensorId, UpdateSensorDto dto)
         {
             var sensorEntity = GetSensorById(sensorId);
-
-            //var authorizationResult  = _authorizationService.AuthorizeAsync(_userContextService.S)
 
             sensorEntity.Adress = dto.Adress;
             sensorEntity.Lat = dto.Lat;
